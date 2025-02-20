@@ -1,0 +1,56 @@
+---
+title: "Long-Read Basic Analysis"
+author: "Justin Elfman"
+date: '2025-02-15'
+output: html_document
+---
+
+## Setup
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Load Libraries
+```{r echo = T, results = 'hide'}
+library(RColorBrewer)
+library(ggplot2)
+library(dplyr)
+library(tidyverse)
+library(VennDiagram)
+library(gtools)
+myCol <- brewer.pal(4, "Pastel2")
+```
+
+## Load data
+```{r}
+setwd("C:/Users/Justin/Box Sync/SHARESPACE/Li_Lab/Computational/All_Chimeras/QiongOutputs")
+predictions <- read.delim("C:/Users/Justin/Box Sync/SHARESPACE/Li_Lab/Computational/All_Chimeras/QiongOutputs/301chimeras_edited.txt")
+validatedchimeras <- read.delim("C:/Users/Justin/Box Sync/SHARESPACE/Li_Lab/Computational/All_Chimeras/QiongOutputs/validatedchimeras.txt")
+countstable <- read.delim("C:/Users/Justin/Box Sync/SHARESPACE/Li_Lab/Computational/All_Chimeras/QiongOutputs/Qiong_countsTable_annotated.tsv")
+```
+
+## Munging: Create unique chimera designation for comparison between datasets
+```{r}
+fullchimeraname<- function(x){
+  temp<-paste(x$GeneName1,x$GeneName2,x$Breakpoint1,x$Breakpoint2,sep = "_")
+  return(temp)
+}
+
+validatedchimeras$FullChimeraName<-fullchimeraname(validatedchimeras)
+```
+## Finding TruePositives from CountsTable
+```{r}
+OnTarget<-countstable[countstable$OnTarget>0,]
+OnTarget$FullChimeraName<-gsub("_F","",OnTarget$SeqName)
+Validated<-countstable[countstable$ManuallyValidated=="Yes" & !is.na(countstable$ManuallyValidated),]
+Validated$FullChimeraName<-gsub("_F","",Validated$SeqName)
+```
+
+## Counts 
+301 chimeras queried -> junction matches for 254 -> BLAT check against hg38 leaves 94 on-target matches --> manual verification of up to 5 reads per on-target leaves 84 validated chimeras. 
+```{r}
+paste(nrow(unique(predictions)),"chimeric RNAs queried.")
+paste(nrow(unique(OnTarget)),"unique chimeric RNAs with long-reads matching on target loci.")
+paste(nrow(unique(Validated)),"unique chimeric RNAs with long-reads matching on target loci remaining after manual verification.")
+```

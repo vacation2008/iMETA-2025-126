@@ -1,0 +1,11 @@
+x
+1	run clusterprofiler.R-4abef9e96061cca41580bea5b50aee86
+2	input gene length=1100
+3	geting GO DB map
+4	geting GO DB map
+5	intersect DB Gene length=1031
+6	succ enriched GO_BP length=6294
+7	succ enriched GO_CC length=881
+8	succ enriched GO_MF length=1198
+9	outputing enrich!
+10	output succed enrich!
